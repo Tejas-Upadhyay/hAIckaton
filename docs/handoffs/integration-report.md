@@ -1,3 +1,26 @@
+# Live provider verification completed
+
+Both saved keys authenticated successfully against their real services. No keys were printed or copied into reports.
+
+| Check | Result | Observed time |
+|---|---|---|
+| NIM independent neutral-image analysis | HTTP 200, valid schema, correctly reports no damage evidence | 2.6 s |
+| OpenRouter independent neutral-image analysis | HTTP 200, valid schema, correctly reports no damage evidence | 4.5 s |
+| Browser upload → primary NIM → report | Real live report with NIM provenance | 2.9 s |
+| Simulated NIM 503 → real OpenRouter backup | HTTP 200, live result, OpenRouter provenance and trusted backup note | 5.8 s |
+| Browser synthetic roof illustration → NIM | Live observations identify synthetic illustration and visible roof features, warn against treating it as real evidence | PASS |
+| Live roof report PDF | Two pages; provenance, synthetic warning, limitations, timestamp retained; final page visually inspected | PASS |
+
+The failure in the failover check was deliberately injected only for NIM; OpenRouter returned a real response. Automated regression tests still use mocked model responses to avoid consuming quota. The existing 46 Node/HTTP + 4 render + 10 browser checks passed on this implementation. No source changes were required after adding the valid credentials.
+
+Evidence files: `dogfood-output/live-browser-result.json`, `live-failover-result.json`, `live-roof-result.json`, `pdfs/live-neutral.pdf`, `pdfs/live-roof-illustration.pdf`, and `screenshots/live-roof-report.png`. Keys are excluded from these artifacts and the browser bundle. Gemini configuration remains removed.
+
+Remaining scope limits: real damaged-property photo accuracy was not evaluated; test inputs were a neutral generated image and a visibly labeled synthetic roof illustration. AI observations remain provisional. Copilot and live emergency feeds are intentionally unavailable. No deployment was performed. No handoff is required for the completed verification. If additional provider/backend issues arise, OpenCode is the appropriate worker; Antigravity handles visual/UI changes.
+
+The older key/setup blockers below are historical and superseded by this live verification.
+
+---
+
 > **Current provider setup:** NIM primary with OpenRouter backup; Gemini runtime and saved credential removed. Failover covers unavailable/configuration/auth/rate/network/timeout/pending responses under one 25-second budget. Invalid/refused output stops. Reports identify the answering provider/model and backup use. Verification: 46 Node/HTTP, 4 render, and 10 browser checks pass, plus production build. Real provider checks await NIM and OpenRouter keys. Both routes use Nemotron, so a shared underlying-model outage may affect both.
 
 > **Latest verification supersedes earlier restrictions:** full Node/HTTP suite 40/40, render checks 4/4, and Playwright browser checks 10/10 PASS. Three actual PDFs verified. Recommended provider is now OpenRouter; real inference awaits its key. See [current QA report](../../dogfood-output/report.md). Integration is being saved as a local commit; nothing is pushed/deployed. Earlier read-only/DNS/browser restrictions below are historical.
