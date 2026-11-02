@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-labelledby="title desc">
+  <title id="title">Synthetic illustration of a Fort Myers interior waterline</title>
+  <desc id="desc">A flat vector illustration made for the StormGuard AI sample gallery. It is not a photograph of a real property.</desc>
+  <defs>
+    <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f4efe4"/>
+      <stop offset="1" stop-color="#e4d8c4"/>
+    </linearGradient>
+    <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#84b7c6" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#4d8699" stop-opacity="0.9"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="#dfd3bf"/>
+  <rect x="60" y="52" width="680" height="360" fill="url(#wall)"/>
+  <rect x="60" y="52" width="680" height="18" fill="#cdbda4"/>
+  <rect x="90" y="90" width="210" height="140" fill="#bfe0ea" stroke="#9bbdc9" stroke-width="8"/>
+  <line x1="195" y1="90" x2="195" y2="230" stroke="#9bbdc9" stroke-width="8"/>
+  <line x1="90" y1="160" x2="300" y2="160" stroke="#9bbdc9" stroke-width="8"/>
+  <rect x="470" y="112" width="150" height="300" fill="#b98c67" stroke="#8e6849" stroke-width="8"/>
+  <circle cx="595" cy="270" r="7" fill="#f4d27a"/>
+  <rect x="60" y="318" width="680" height="16" fill="#c8b596"/>
+  <path d="M60 334 H740 V412 H60 Z" fill="url(#water)"/>
+  <path d="M60 334 Q150 326 240 336 T420 334 T600 338 T740 334" fill="none" stroke="#3f7486" stroke-width="5" opacity="0.7"/>
+  <path d="M60 372 Q160 364 260 374 T470 370 T740 374" fill="none" stroke="#e7f4f6" stroke-width="3" opacity="0.55"/>
+  <g fill="#8a795f" opacity="0.45">
+    <ellipse cx="120" cy="404" rx="38" ry="8"/>
+    <ellipse cx="310" cy="410" rx="54" ry="9"/>
+    <ellipse cx="640" cy="402" rx="46" ry="7"/>
+  </g>
+  <rect x="60" y="412" width="680" height="88" fill="#b78b63"/>
+  <g stroke="#9b744f" stroke-width="2" opacity="0.5">
+    <line x1="60" y1="436" x2="740" y2="436"/>
+    <line x1="60" y1="462" x2="740" y2="462"/>
+    <line x1="60" y1="488" x2="740" y2="488"/>
+  </g>
+  <rect x="0" y="0" width="800" height="54" fill="#102a43" opacity="0.88"/>
+  <text x="400" y="34" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="21" font-weight="700" fill="#ffffff" letter-spacing="1.5">SYNTHETIC ILLUSTRATION · NOT A REAL PHOTO</text>
+  <text x="400" y="482" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#234e3b">Fort Myers flood sample · StormGuard AI · illustrative only</text>
+</svg>

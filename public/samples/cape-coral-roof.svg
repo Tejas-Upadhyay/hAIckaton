@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-labelledby="title desc">
+  <title id="title">Synthetic illustration of a Cape Coral roof with displaced covering</title>
+  <desc id="desc">A flat vector illustration made for the StormGuard AI sample gallery. It is not a photograph of a real property.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#bfe6f2"/>
+      <stop offset="1" stop-color="#eef8fb"/>
+    </linearGradient>
+    <linearGradient id="roof" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7d8f9c"/>
+      <stop offset="1" stop-color="#54646f"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#sky)"/>
+  <circle cx="690" cy="82" r="42" fill="#f9d27a" opacity="0.9"/>
+  <path d="M0 390 Q120 360 250 388 T520 386 T800 380 V500 H0 Z" fill="#9ec9a2"/>
+  <path d="M0 430 Q180 408 380 432 T800 426 V500 H0 Z" fill="#7aae83"/>
+  <rect x="150" y="245" width="480" height="175" fill="#f1e7d3"/>
+  <rect x="150" y="245" width="480" height="12" fill="#d8c9ad"/>
+  <polygon points="120,250 390,120 660,250" fill="url(#roof)"/>
+  <polygon points="170,250 390,148 610,250" fill="#93a5b0"/>
+  <g fill="#6f7f8a">
+    <rect x="210" y="226" width="76" height="20" rx="2" transform="rotate(-2 248 236)"/>
+    <rect x="300" y="218" width="76" height="20" rx="2" transform="rotate(1 338 228)"/>
+    <rect x="390" y="212" width="76" height="20" rx="2"/>
+    <rect x="480" y="218" width="76" height="20" rx="2" transform="rotate(-1 518 228)"/>
+    <rect x="560" y="226" width="52" height="20" rx="2"/>
+  </g>
+  <polygon points="395,216 540,258 522,274 382,232" fill="#e5e9eb" stroke="#c7d0d5" stroke-width="3"/>
+  <g transform="translate(355 205) rotate(-14)">
+    <rect x="0" y="0" width="86" height="24" rx="3" fill="#667985"/>
+    <rect x="8" y="4" width="70" height="4" fill="#8798a2"/>
+  </g>
+  <g transform="translate(470 200) rotate(12)">
+    <rect x="0" y="0" width="70" height="22" rx="3" fill="#667985"/>
+    <rect x="7" y="4" width="56" height="4" fill="#8798a2"/>
+  </g>
+  <rect x="212" y="290" width="78" height="78" fill="#8ec5d8" stroke="#6a9fb2" stroke-width="5"/>
+  <rect x="470" y="292" width="86" height="128" fill="#b98c67" stroke="#8e6849" stroke-width="5"/>
+  <circle cx="542" cy="360" r="5" fill="#f4d27a"/>
+  <g transform="translate(650 300)">
+    <rect x="10" y="60" width="10" height="120" fill="#7a5b3e"/>
+    <path d="M15 64 Q-32 28 -10 12 Q30 30 15 64 Z" fill="#3f8b62"/>
+    <path d="M15 64 Q55 26 80 44 Q52 72 15 64 Z" fill="#4b9c6e"/>
+    <path d="M15 64 Q-18 96 4 116 Q34 92 15 64 Z" fill="#357a56"/>
+  </g>
+  <rect x="0" y="0" width="800" height="54" fill="#102a43" opacity="0.88"/>
+  <text x="400" y="34" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="21" font-weight="700" fill="#ffffff" letter-spacing="1.5">SYNTHETIC ILLUSTRATION · NOT A REAL PHOTO</text>
+  <text x="400" y="482" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#234e3b">Cape Coral roof sample · StormGuard AI · illustrative only</text>
+</svg>

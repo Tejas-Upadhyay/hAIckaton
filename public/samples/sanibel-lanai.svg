@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-labelledby="title desc">
+  <title id="title">Synthetic illustration of a Sanibel lanai screen enclosure</title>
+  <desc id="desc">A flat vector illustration made for the StormGuard AI sample gallery. It is not a photograph of a real property.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#bfe6f2"/>
+      <stop offset="1" stop-color="#eef8fb"/>
+    </linearGradient>
+    <pattern id="mesh" width="12" height="12" patternUnits="userSpaceOnUse">
+      <path d="M0 0 H12 M0 0 V12" stroke="#9fb9bd" stroke-width="1" opacity="0.65"/>
+    </pattern>
+  </defs>
+  <rect width="800" height="500" fill="url(#sky)"/>
+  <circle cx="676" cy="88" r="38" fill="#f9d27a" opacity="0.9"/>
+  <path d="M0 390 Q150 366 300 390 T600 388 T800 382 V500 H0 Z" fill="#9ec9a2"/>
+  <rect x="90" y="310" width="620" height="90" fill="#c9b79b"/>
+  <rect x="90" y="310" width="620" height="14" fill="#ac9679"/>
+  <g fill="#7f969b">
+    <rect x="120" y="120" width="14" height="220"/>
+    <rect x="300" y="120" width="14" height="220"/>
+    <rect x="540" y="120" width="14" height="220"/>
+    <rect x="666" y="120" width="14" height="220"/>
+    <rect x="120" y="120" width="560" height="14"/>
+    <rect x="120" y="250" width="560" height="10"/>
+  </g>
+  <rect x="134" y="134" width="166" height="116" fill="url(#mesh)"/>
+  <rect x="314" y="134" width="226" height="116" fill="url(#mesh)"/>
+  <rect x="554" y="134" width="112" height="116" fill="url(#mesh)"/>
+  <rect x="134" y="260" width="166" height="60" fill="url(#mesh)"/>
+  <rect x="314" y="260" width="226" height="60" fill="url(#mesh)"/>
+  <rect x="554" y="260" width="112" height="60" fill="url(#mesh)"/>
+  <g transform="translate(540 140) rotate(8)">
+    <rect x="0" y="0" width="120" height="10" fill="#6f848a"/>
+    <rect x="6" y="4" width="108" height="3" fill="#a7bdc1"/>
+  </g>
+  <path d="M314 134 L386 196 L350 250 L314 250 Z" fill="#dceef2" opacity="0.75"/>
+  <path d="M314 134 L386 196 L350 250" fill="none" stroke="#6f848a" stroke-width="3" stroke-dasharray="8 6"/>
+  <path d="M314 196 L360 170 L410 205 L380 250 L314 250 Z" fill="#f4fbfc" opacity="0.55"/>
+  <g transform="translate(700 300)">
+    <rect x="8" y="52" width="9" height="110" fill="#7a5b3e"/>
+    <path d="M12 56 Q-28 24 -8 10 Q28 26 12 56 Z" fill="#3f8b62"/>
+    <path d="M12 56 Q48 22 70 38 Q46 64 12 56 Z" fill="#4b9c6e"/>
+    <path d="M12 56 Q-14 84 6 102 Q32 80 12 56 Z" fill="#357a56"/>
+  </g>
+  <rect x="0" y="0" width="800" height="54" fill="#102a43" opacity="0.88"/>
+  <text x="400" y="34" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="21" font-weight="700" fill="#ffffff" letter-spacing="1.5">SYNTHETIC ILLUSTRATION · NOT A REAL PHOTO</text>
+  <text x="400" y="482" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#234e3b">Sanibel lanai sample · StormGuard AI · illustrative only</text>
+</svg>

@@ -2,24 +2,162 @@
 @source "../components";
 @source "../App.jsx";
 
-:root { font-family: system-ui, sans-serif; color: #173d35; background: #f4f7f3; line-height: 1.6; }
-h2 { font-size: 1.5rem; font-weight: 700; margin: 0 0 1rem; }
-h3 { font-weight: 700; margin-top: 1rem; }
-p { margin: .6rem 0; }
-.panel { background: white; border: 1px solid #c9d9d1; padding: 1.5rem; border-radius: 1rem; margin-bottom: 1.5rem; }
-.eyebrow { font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; }
-label { display: block; font-weight: 600; }
-input { display: block; margin: .75rem 0; max-width: 100%; }
-button { background: #173d35; color: white; padding: .65rem 1rem; border-radius: .5rem; cursor: pointer; }
-button:disabled { opacity: .5; cursor: not-allowed; }
-:focus-visible { outline: 3px solid #c66c24; outline-offset: 3px; }
-.preview { max-height: 20rem; margin: 1rem 0; object-fit: contain; }
-ul { list-style: disc; padding-left: 1.5rem; }
-[role=alert] { color: #9a3423; }
+@layer base {
+:root {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #173d35;
+  background-color: #f4f7f3;
+  line-height: 1.6;
+}
+
+h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 1rem;
+}
+
+h3 {
+  font-weight: 700;
+  margin-top: 1rem;
+}
+
+p {
+  margin: 0.5rem 0;
+}
+
+.panel {
+  background: white;
+  border: 1px solid #c9d9d1;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0 rgba(23, 61, 53, 0.05);
+}
+
+.eyebrow {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+}
+
+button {
+  background: #173d35;
+  color: white;
+  padding: 0.625rem 1.125rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out, opacity 0.15s ease-in-out;
+  border: 1px solid transparent;
+}
+
+button:hover:not(:disabled) {
+  background: #112d27;
+}
+
+button.secondary {
+  background: #e8f0ec;
+  color: #173d35;
+  border: 1px solid #c9d9d1;
+}
+
+button.secondary:hover:not(:disabled) {
+  background: #d8e5df;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+:focus-visible {
+  outline: 3px solid #c66c24 !important;
+  outline-offset: 2px !important;
+}
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Print Stylesheet for Formal Documentation Draft */
 @media print {
-  :root { color: black; background: white; }
-  .no-print, header { display: none !important; }
-  .panel { border: 0; padding: 0; }
-  main { max-width: none; padding: 0; }
-  .report section { break-inside: avoid; }
+  :root {
+    color: black !important;
+    background: white !important;
+    font-size: 12pt;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  .no-print,
+  header,
+  footer,
+  nav,
+  button,
+  input,
+  form {
+    display: none !important;
+  }
+
+  main {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .panel {
+    border: none !important;
+    padding: 0 !important;
+    margin-bottom: 1.5rem !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+
+  .report {
+    display: block !important;
+    overflow: visible !important;
+    border: 1px solid #ccc !important;
+    padding: 1.5rem !important;
+    border-radius: 0 !important;
+  }
+
+  .report section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    border: 1px solid #ddd !important;
+    background: #fafafa !important;
+  }
+
+  .report .grid {
+    display: block !important;
+  }
+
+  .report .grid > section {
+    margin-bottom: 1rem !important;
+  }
+
+  .report, .report * {
+    color: #111 !important;
+  }
+
+  /* Highlight provenance/severity without boxing ordinary metadata labels. */
+  .report [data-provenance], .report .capitalize {
+    border: 1px solid #999 !important;
+    color: black !important;
+    background: #eee !important;
+  }
 }

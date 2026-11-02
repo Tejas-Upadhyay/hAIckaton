@@ -9,7 +9,7 @@ These contracts supersede the browser key, guessed evacuation zones, assumed liv
 All service functions return Promises:
 
 ```js
-listSampleCases() // -> Array<{ id, title, description }>
+listSampleCases() // -> Array<{ id, title, description, imageUrl?: string }>
 analyzeDamage({ file: File | null, sampleId: string | null }) // -> Assessment
 getEmergencyResources() // -> EmergencyResources
 askCopilot({ message: string, county: string | null }) // -> CopilotReply
@@ -62,7 +62,7 @@ For multipart, browser fetch sets Content-Type and boundary automatically. Serve
 Errors: `{ "error": { "code": "NOT_CONFIGURED", "message": "Safe user-facing description." } }`.
 Status/code mapping: 400 `INVALID_REQUEST` or `INVALID_IMAGE`; 413 `IMAGE_TOO_LARGE`; 415 `UNSUPPORTED_MEDIA_TYPE`; 503 `NOT_CONFIGURED` or `UNAVAILABLE`; 502 `INVALID_RESPONSE`; 504 `TIMEOUT`; 405 `METHOD_NOT_ALLOWED`; 404 `NOT_FOUND`. Never include credentials, stack traces, raw provider payloads, or arbitrary HTML.
 
-The scaffold intentionally returns 503 for POST analyze/chat, even when credentials exist. OpenCode implements live integration, with a server-configured and verified `GEMINI_MODEL`, using native fetch or a dependency approved by Codex. The browser must not send an API key or a model selector.
+POST analyze implements server-side OpenRouter and Gemini integrations selected by `AI_PROVIDER`; it returns 503 when credentials or model configuration are missing. POST chat remains intentionally unavailable. For OpenRouter configure server-only `OPENROUTER_API_KEY` and `OPENROUTER_MODEL`; for Gemini use `GEMINI_API_KEY` and `GEMINI_MODEL`. Selection defaults to Gemini if AI_PROVIDER is omitted for compatibility; the example env explicitly selects OpenRouter. Provider choice never changes the v1 Assessment shape and never silently falls back to another model, provider, or sample. The browser must not send an API key or a model selector.
 
 ## Emergency resources
 

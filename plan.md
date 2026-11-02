@@ -43,6 +43,8 @@ Model names and settings above were supplied by the project owner. They document
 
 ### Application AI Model
 
+**Current integration choice:** OpenRouter, with pinned model `nvidia/nemotron-3.5-super-vl:free` (image input and structured-output support checked in provider metadata November 2, 2026). Set server-only `AI_PROVIDER`, `OPENROUTER_API_KEY`, and `OPENROUTER_MODEL`. Gemini remains an optional alternative. The previously supplied Gemini credential returned 401 UNAUTHENTICATED. A new OpenRouter credential and successful real inference are still required; mocked tests do not establish live availability.
+
 The **Gemini vision/chat model used by StormGuard at runtime is separate from the models powering these development tools**. Using Gemini in the app does not configure OpenCode, Codex, or Antigravity. Confirm the available Gemini model ID and credentials before implementing the service, and record the selected runtime model here. The Gemini 2.0/1.5 Flash references below are provisional choices to verify, not confirmed available endpoints. Development-tool subscriptions or logins do not establish that the application's Gemini API credentials are configured.
 
 If live analysis is unavailable, show an explicit **demo/sample result** label. Pre-computed results must not be presented as a fresh AI assessment of an arbitrary uploaded image.

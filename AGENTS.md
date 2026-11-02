@@ -19,6 +19,9 @@ Codex may edit all files during integration after the workers finish. Workers mu
 - `npm run dev`: UI at http://127.0.0.1:5173.
 - `npm run dev:server`: API at http://127.0.0.1:8787 in a separate terminal.
 - `npm test`: dependency-free Node contract/service tests.
+- `npm run test:targeted`: service and in-memory API checks without localhost sockets.
+- `npm run test:render`: actual React report markup checks using existing Vite/React dependencies.
+- `npm run test:e2e`: isolated Playwright browser/PDF/accessibility regressions using installed Chrome and mocked AI.
 - `npm run build`: production UI build; required before integration is accepted.
 - `npm run preview`: built UI smoke test only. It has no API proxy; preview supports samples, and live API hosting remains a deployment concern.
 - `npm run check`: tests and build.
@@ -34,7 +37,7 @@ Codex may edit all files during integration after the workers finish. Workers mu
 ## Application rules
 
 - Prioritize upload → assessment → printable documentation draft. Emergency resources and copilot are secondary.
-- Gemini credentials belong only on the server as `GEMINI_API_KEY` / `GEMINI_MODEL`. Never expose credentials in `VITE_` variables, browser storage, logs, or responses.
+- AI credentials belong only on the server. Use `AI_PROVIDER=openrouter` with `OPENROUTER_API_KEY` / `OPENROUTER_MODEL`, or `AI_PROVIDER=gemini` with `GEMINI_API_KEY` / `GEMINI_MODEL`. Never expose credentials in `VITE_` variables, browser storage, logs, or responses.
 - Model names in `plan.md` describe owner-reported development selections, not verified Gemini API endpoint IDs.
 - Use `src/contracts/assessment.js` and `docs/contracts.md` as the interface authority. Do not add mandatory fields without an integration handoff.
 - Return explicit unavailable/errors for live failures. Samples are user-selected, visibly labeled illustrations; never substitute a sample assessment for an arbitrary uploaded image.
