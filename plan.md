@@ -225,3 +225,8 @@ Provides instant-load sample assets and benchmark AI evaluations for bulletproof
 3. **Evacuation & Shelter Intelligence (1 min)**: Select Sanibel / Cape Coral -> show Zone A evacuation order and nearest open shelters (Alico Arena at FGCU).
 4. **Storm Copilot (30 sec)**: Real-time dynamic emergency checklist.
 5. **Impact & Q&A (30 sec)**: Review tech stack, Gemini latency, and reliability.
+
+
+## Current provider decision (supersedes earlier runtime proposals)
+
+NVIDIA NIM primary (`nvidia/nemotron-3.5-super-vl-120b-a12b`) with OpenRouter backup (`nvidia/nemotron-3.5-super-vl:free`). Separate server-only keys, explicit provider ordering and bounded live failover; no automatic sample substitution. Gemini application integration and saved key removed. Development-tool assignments above remain separate. See server/README.md and docs/contracts.md. Live verification awaits provider keys.

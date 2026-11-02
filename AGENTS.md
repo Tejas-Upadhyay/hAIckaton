@@ -37,9 +37,9 @@ Codex may edit all files during integration after the workers finish. Workers mu
 ## Application rules
 
 - Prioritize upload → assessment → printable documentation draft. Emergency resources and copilot are secondary.
-- AI credentials belong only on the server. Use `AI_PROVIDER=openrouter` with `OPENROUTER_API_KEY` / `OPENROUTER_MODEL`, or `AI_PROVIDER=gemini` with `GEMINI_API_KEY` / `GEMINI_MODEL`. Never expose credentials in `VITE_` variables, browser storage, logs, or responses.
+- AI credentials stay server-side: NIM_API_KEY/NIM_MODEL for primary NIM, OPENROUTER_API_KEY/OPENROUTER_MODEL for backup. AI_PROVIDER and AI_FALLBACK_PROVIDER define order. Gemini runtime support is removed.
 - Model names in `plan.md` describe owner-reported development selections, not verified Gemini API endpoint IDs.
-- Use `src/contracts/assessment.js` and `docs/contracts.md` as the interface authority. Do not add mandatory fields without an integration handoff.
+- Use `src/contracts/assessment.js` and `docs/contracts.md` as the interface authority. Do not add mandatory fields without an integration handoff. Reports identify the successful provider in the existing model field.
 - Return explicit unavailable/errors for live failures. Samples are user-selected, visibly labeled illustrations; never substitute a sample assessment for an arbitrary uploaded image.
 - Emergency entries need verified source URLs and timestamps; otherwise show unavailable or demo. Never infer official evacuation zones from city names or hard-coded surge heights.
 - Photo assessments are provisional observations. Do not claim official FEMA classifications, eligibility, structural safety, confirmed mold, or repair quotes from a photo.

@@ -2,7 +2,7 @@ import { createServer } from 'node:http';
 import { pathToFileURL } from 'node:url';
 import { randomUUID } from 'node:crypto';
 import { emergencyResources } from '../src/data/swflEmergencyData.js';
-import { readAIConfig } from './config.js';
+import { readProviderChain } from './config.js';
 import { requestOpenRouterAssessment } from './openrouter.js';
 import {
   ApiError,
@@ -13,7 +13,7 @@ import {
   unavailable,
 } from './errors.js';
 import { readBodyWithLimit, parseImageUpload } from './multipart.js';
-import { PROVIDER_TIMEOUT_MS, requestGeminiAssessment } from './gemini.js';
+import { PROVIDER_TIMEOUT_MS } from './provider-common.js';
 import { buildLiveAssessment, validateProviderContent } from './validation.js';
 
 function setCommonHeaders(response) {
@@ -57,8 +57,8 @@ async function analyzeRequest(request, response, deps) {
   const body = await readBodyWithLimit(request);
   const image = await parseImageUpload(contentType, body);
 
-  const config = readAIConfig(deps.env);
-  if (!config.configured) throw notConfigured();
+  const configs = readProviderChain(deps.env);
+  if (!configs.length) throw notConfigured();
 
   const controller = new AbortController();
   let clientGone = false;
@@ -71,23 +71,32 @@ async function analyzeRequest(request, response, deps) {
   response.on('close', onClientClose);
 
   try {
-    const analyze = config.provider === 'openrouter' ? requestOpenRouterAssessment : requestGeminiAssessment;
-    const providerContent = await analyze({
-      bytes: image.bytes,
-      mimeType: image.mimeType,
-      config,
-      fetchImpl: deps.fetchImpl,
-      signal: controller.signal,
-      timeoutMs: deps.providerTimeoutMs,
-    });
-    if (clientGone) return;
-    const content = validateProviderContent(providerContent);
-    const assessment = buildLiveAssessment({
-      content,
-      model: config.model,
-      now: deps.now,
-      id: deps.idFactory,
-    });
+    let assessment;
+    let lastError;
+    const started = Date.now();
+    for (let index = 0; index < configs.length; index++) {
+      const config = configs[index];
+      if (controller.signal.aborted) return;
+      const remaining = deps.providerTimeoutMs - (Date.now() - started);
+      if (remaining <= 0) break;
+      // Reserve time for the backup inside the existing 25s total budget.
+      const budget = index < configs.length - 1 ? Math.min(12000, remaining / 2) : remaining;
+      try {
+        const providerContent = await requestOpenRouterAssessment({ bytes: image.bytes, mimeType: image.mimeType, config, fetchImpl: deps.fetchImpl, signal: controller.signal, timeoutMs: Math.max(1, Math.floor(budget)) });
+        const content = validateProviderContent(providerContent);
+        if (config.provider !== (deps.env.AI_PROVIDER || 'nim').trim().toLowerCase()) {
+          content.limitations.push('Backup live provider used because the primary provider was unavailable or not configured.');
+        }
+        assessment = buildLiveAssessment({ content, model: `${config.provider}:${config.model}`, now: deps.now, id: deps.idFactory });
+        break;
+      } catch (error) {
+        lastError = error;
+        if (controller.signal.aborted) return;
+        // A refusal/invalid result is not retried to evade the provider's decision.
+        if (error.code === 'INVALID_RESPONSE') throw error;
+      }
+    }
+    if (!assessment) throw lastError || unavailable();
     if (clientGone) return;
     sendJson(response, 200, assessment);
   } catch (error) {
@@ -108,10 +117,10 @@ async function handleRequest(request, response, deps) {
       request.resume?.();
       throw methodNotAllowed('GET');
     }
-    const config = readAIConfig(deps.env);
+    const configured = readProviderChain(deps.env).length > 0;
     return sendJson(response, 200, {
-      status: config.configured ? 'ready' : 'stub',
-      liveAnalysis: config.configured,
+      status: configured ? 'ready' : 'stub',
+      liveAnalysis: configured,
     });
   }
 

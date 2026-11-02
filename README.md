@@ -1,6 +1,6 @@
 # SWFL StormGuard AI
 
-Solo hackathon entry supported by Codex, OpenCode, and Antigravity. Recovered worker implementation: labeled sample assessments, a printable documentation draft, and server-side photo analysis through OpenRouter or Gemini. Copilot and live emergency information remain unavailable. A real-key Gemini smoke test is still required.
+Solo hackathon entry supported by Codex, OpenCode, and Antigravity. Recovered worker implementation: labeled sample assessments, a printable documentation draft, and server-side photo analysis through NVIDIA NIM with OpenRouter backup. Copilot and live emergency information remain unavailable. A real-key Gemini smoke test is still required.
 
 ## Local development
 
@@ -11,7 +11,19 @@ npm install
 npm run dev
 ```
 
-UI: http://127.0.0.1:5173. In another terminal, `npm run dev:server` starts the API on port 8787. Copy `.env.example` to ignored `.env.local` and set `AI_PROVIDER=openrouter`, server-only `OPENROUTER_API_KEY`, and `OPENROUTER_MODEL=nvidia/nemotron-3.5-super-vl:free`. Alternatively, select `AI_PROVIDER=gemini` and set `GEMINI_API_KEY` / `GEMINI_MODEL`. Restart the API after configuration changes. Never use a `VITE_` key or commit credentials. Health reports configuration presence, not provider connectivity. Sample selection needs no key; live failures never substitute sample results.
+UI: http://127.0.0.1:5173. In another terminal run `npm run dev:server` for port 8787. Configure ignored `.env.local`:
+
+```dotenv
+AI_PROVIDER=nim
+AI_FALLBACK_PROVIDER=openrouter
+NIM_API_KEY=your-nvidia-key
+NIM_MODEL=nvidia/nemotron-3.5-super-vl-120b-a12b
+OPENROUTER_API_KEY=your-openrouter-key
+OPENROUTER_MODEL=nvidia/nemotron-3.5-super-vl:free
+PORT=8787
+```
+
+Restart the API after changing credentials. Both keys remain server-side. The backup is used on service/configuration failures within a shared timeout, never as a substitute sample. Reports show which provider/model answered. Invalid/refused model output stops rather than bypassing refusal. See [provider details](server/README.md). Live provider verification still requires both keys. Samples need neither.
 
 ```sh
 npm test
@@ -28,9 +40,6 @@ Preview is for the static build and has no API proxy. Same-origin production API
 
 Uploads are checked for MIME, size, signatures, and basic container completeness before a provider request. This catches obvious truncation, but is not a full image decoder. Damaged compressed image data may still be rejected by the provider, with an explicit error rather than an invented assessment.
 
-OpenRouter is the recommended runtime setup for this demo. Its default `nvidia/nemotron-3.5-super-vl:free` advertised image input and structured outputs in the [model catalog](https://openrouter.ai/api/v1/models) on November 2, 2026. Free endpoints are rate-limited and availability can change. Model support is tested with mocks until a real OpenRouter key is configured. Credentials remain server-side; the model string in reports identifies the selected provider model.
-
-The optional Gemini runtime model is `gemini-3.8-flash`, which [Google documents](https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash) as supporting image input and structured output. Your API project still needs model access and quota. The app's runtime key is separate from development-tool logins.
 
 ## Five-minute demo rehearsal
 

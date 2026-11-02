@@ -15,7 +15,7 @@ test('provider selection is explicit and credentials stay isolated', () => {
   assert.equal(readAIConfig({ ...env, OPENROUTER_API_KEY: '' }).configured, false);
   assert.equal(readAIConfig({ ...env, AI_PROVIDER: 'unknown' }).configured, false);
   assert.equal(readAIConfig({ ...env, OPENROUTER_API_KEY: 'bad\r\nvalue' }).configured, false);
-  assert.equal(readAIConfig({ GEMINI_API_KEY: 'mock', GEMINI_MODEL: 'test-vision' }).provider, 'gemini');
+  assert.equal(readAIConfig({}).provider, 'nim');
 });
 
 test('OpenRouter requests pin a model and include image input and strict output schema', async () => {
@@ -56,7 +56,7 @@ test('real HTTP upload uses OpenRouter and trusted server provenance', async () 
     assert.equal(response.status, 200);
     const result = await response.json();
     assert.equal(result.mode, 'live');
-    assert.equal(result.model, env.OPENROUTER_MODEL);
+    assert.equal(result.model, 'openrouter:' + env.OPENROUTER_MODEL);
     assert.equal(result.sampleId, null);
     assert.ok(result.limitations.length > 1);
     assert.ok(!JSON.stringify(result).includes('mock-openrouter-key'));

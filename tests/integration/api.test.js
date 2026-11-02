@@ -66,17 +66,17 @@ test('handler validates image bytes and keeps resources and chat unavailable', a
 
 test('browser service accepts validated live output through handler with mocked provider', async (t) => {
   const server = createApiServer({
-    env: { GEMINI_API_KEY: 'mock-only', GEMINI_MODEL: 'test-vision' },
-    fetchImpl: async () => Response.json({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: JSON.stringify({
+    env: { AI_PROVIDER: 'openrouter', OPENROUTER_API_KEY: 'mock-only', OPENROUTER_MODEL: 'test-vision' },
+    fetchImpl: async () => Response.json({ choices: [{ finish_reason: 'stop', message: { content: JSON.stringify({
       summary: 'Mocked observation.', severity: 'unknown', observations: ['Insufficient detail.'],
       hazards: [], nextSteps: ['Seek qualified inspection.'], limitations: ['Mock provider.'],
-    }) }] } }] }),
+    }) } }] }),
   });
   t.mock.method(globalThis, 'fetch', (path, options) => dispatch(server, path, options));
   const result = await services.analyzeDamage({ file: new File([png], 'photo.png', { type: 'image/png' }) });
   assert.equal(result.mode, 'live');
   assert.equal(result.sampleId, null);
-  assert.equal(result.model, 'test-vision');
+  assert.equal(result.model, 'openrouter:test-vision');
   assert.ok(result.limitations.length > 1);
 });
 
@@ -86,7 +86,7 @@ test('provider authentication, network and malformed output failures stay explic
     [async () => { throw new Error('private provider failure'); }, 503, 'UNAVAILABLE'],
     [async () => Response.json({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: '{"severity":"safe"}' }] } }] }), 502, 'INVALID_RESPONSE'],
   ]) {
-    const server = createApiServer({ env: { GEMINI_API_KEY: 'mock-secret', GEMINI_MODEL: 'test-vision' }, fetchImpl });
+    const server = createApiServer({ env: { AI_PROVIDER: 'openrouter', OPENROUTER_API_KEY: 'mock-secret', OPENROUTER_MODEL: 'test-vision' }, fetchImpl });
     const response = await dispatch(server, '/api/analyze', upload(new File([png], 'photo.png', { type: 'image/png' })));
     assert.equal(response.status, status);
     const text = await response.text();
@@ -98,7 +98,7 @@ test('provider authentication, network and malformed output failures stay explic
 
 test('provider timeout is bounded and does not return sample content', async () => {
   const server = createApiServer({
-    env: { GEMINI_API_KEY: 'mock-secret', GEMINI_MODEL: 'test-vision' },
+    env: { AI_PROVIDER: 'openrouter', OPENROUTER_API_KEY: 'mock-secret', OPENROUTER_MODEL: 'test-vision' },
     providerTimeoutMs: 10,
     fetchImpl: async (_, { signal }) => new Promise((resolve, reject) => {
       const timer = setTimeout(() => resolve(Response.json({})), 1000);

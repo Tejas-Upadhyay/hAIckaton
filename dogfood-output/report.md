@@ -1,3 +1,5 @@
+> **Current provider setup:** NIM primary with OpenRouter backup; Gemini runtime and saved credential removed. Failover covers unavailable/configuration/auth/rate/network/timeout/pending responses under one 25-second budget. Invalid/refused output stops. Reports identify the answering provider/model and backup use. Verification: 46 Node/HTTP, 4 render, and 10 browser checks pass, plus production build. Real provider checks await NIM and OpenRouter keys. Both routes use Nemotron, so a shared underlying-model outage may affect both.
+
 # StormGuard QA — current verification
 
 **Date:** November 2, 2026. **Browser:** installed Google Chrome. **Scope:** local hackathon MVP, not a production deployment.

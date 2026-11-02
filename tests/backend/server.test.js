@@ -14,15 +14,7 @@ function pngFile(name = 'test.png') {
 }
 
 function providerPayload(content, extra = {}) {
-  return {
-    candidates: [
-      {
-        content: { parts: [{ text: JSON.stringify(content) }] },
-        finishReason: 'STOP',
-      },
-    ],
-    ...extra,
-  };
+  return { choices: [{ message: { content: JSON.stringify(content) }, finish_reason: 'stop' }], ...extra };
 }
 
 const VALID_CONTENT = {
@@ -70,8 +62,9 @@ function formWith(file, field = 'image') {
 
 function configuredEnv(overrides = {}) {
   return {
-    GEMINI_API_KEY: 'super-secret-test-key',
-    GEMINI_MODEL: 'gemini-3.8-flash',
+    AI_PROVIDER: 'openrouter',
+    OPENROUTER_API_KEY: 'super-secret-test-key',
+    OPENROUTER_MODEL: 'test-vision',
     ...overrides,
   };
 }
@@ -92,9 +85,9 @@ test('health reports configured state without exposing credentials', async () =>
   });
 
   for (const env of [
-    { GEMINI_API_KEY: 'key' },
-    { GEMINI_MODEL: 'gemini-3.8-flash' },
-    { GEMINI_API_KEY: 'key', GEMINI_MODEL: '../../evil' },
+    { OPENROUTER_API_KEY: 'key' },
+    { OPENROUTER_MODEL: 'test-vision' },
+    { OPENROUTER_API_KEY: 'key', OPENROUTER_MODEL: '../../evil' },
   ]) {
     await withServer({ env }, async (baseUrl) => {
       const response = await fetch(`${baseUrl}/api/health`);
@@ -136,7 +129,7 @@ test('valid uploads produce a live assessment with server-owned provenance', asy
     assert.equal(assessment.id, 'assessment-test-assessment-id');
     assert.equal(assessment.mode, 'live');
     assert.equal(assessment.sampleId, null);
-    assert.equal(assessment.model, 'gemini-3.8-flash');
+    assert.equal(assessment.model, 'openrouter:test-vision');
     assert.equal(assessment.createdAt, '2026-11-02T12:00:00.000Z');
     assert.equal(assessment.summary, VALID_CONTENT.summary);
     assert.deepEqual(assessment.observations, VALID_CONTENT.observations);
@@ -146,16 +139,16 @@ test('valid uploads produce a live assessment with server-owned provenance', asy
 
   assert.equal(calls.length, 1);
   const { url, init } = calls[0];
-  assert.equal(url, 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent');
+  assert.equal(url, 'https://openrouter.ai/api/v1/chat/completions');
   assert.equal(init.method, 'POST');
-  assert.equal(init.headers['x-goog-api-key'], 'super-secret-test-key');
+  assert.equal(init.headers.Authorization, 'Bearer super-secret-test-key');
   const requestBody = JSON.parse(init.body);
-  assert.equal(requestBody.generationConfig.responseMimeType, 'application/json');
-  assert.equal(requestBody.generationConfig.responseSchema.type, 'OBJECT');
-  assert.equal(requestBody.contents[0].parts[1].inlineData.mimeType, 'image/png');
-  assert.equal(requestBody.contents[0].parts[1].inlineData.data, PNG_BYTES.toString('base64'));
-  assert.ok(requestBody.systemInstruction.parts[0].text.includes('FEMA'));
-  assert.equal(requestBody.store, false);
+  assert.equal(requestBody.response_format.type, 'json_schema');
+  assert.equal(requestBody.response_format.json_schema.schema.type, 'object');
+  assert.equal(requestBody.messages[1].content[1].type, 'image_url');
+  assert.equal(requestBody.messages[1].content[1].image_url.url, 'data:image/png;base64,' + PNG_BYTES.toString('base64'));
+  assert.ok(requestBody.messages[0].content.includes('FEMA'));
+
 });
 
 test('complete JPEG and WebP containers are accepted and forwarded with their MIME type', async () => {
@@ -179,7 +172,7 @@ test('complete JPEG and WebP containers are accepted and forwarded with their MI
         const extension = type === 'image/jpeg' ? 'jpg' : 'webp';
         const response = await analyze(baseUrl, formWith(new File([bytes], `test.${extension}`, { type })));
         assert.equal(response.status, 200);
-        assert.equal(JSON.parse(calls[0].body).contents[0].parts[1].inlineData.mimeType, type);
+        assert.equal(JSON.parse(calls[0].body).messages[1].content[1].image_url.url.startsWith(`data:${type};base64,`), true);
       },
     );
   }
@@ -211,7 +204,7 @@ test('configured-looking requests without credentials return NOT_CONFIGURED', as
   });
 
   await withServer(
-    { env: { GEMINI_API_KEY: 'key' }, fetchImpl: async () => assert.fail('provider must not be called') },
+    { env: { OPENROUTER_API_KEY: 'key' }, fetchImpl: async () => assert.fail('provider must not be called') },
     async (baseUrl) => {
       const response = await analyze(baseUrl, formWith(pngFile()));
       assert.equal(response.status, 503);
@@ -408,24 +401,24 @@ test('malformed or incomplete provider content returns INVALID_RESPONSE', async 
     {
       env: configuredEnv(),
       fetchImpl: async () =>
-        jsonResponse({ candidates: [{ content: { parts: [{ text: JSON.stringify(VALID_CONTENT) }] }, finishReason: 'SAFETY' }] }),
+        jsonResponse({ choices: [{ message: { refusal: 'refused' }, finish_reason: 'content_filter' }] }),
     },
     async (baseUrl) => {
       const response = await analyze(baseUrl, formWith(pngFile()));
-      assert.equal(response.status, 503);
-      assert.equal((await response.json()).error.code, 'UNAVAILABLE');
+      assert.equal(response.status, 502);
+      assert.equal((await response.json()).error.code, 'INVALID_RESPONSE');
     },
   );
 
   await withServer(
     {
       env: configuredEnv(),
-      fetchImpl: async () => jsonResponse({ promptFeedback: { blockReason: 'SAFETY' } }),
+      fetchImpl: async () => jsonResponse({ choices: [] }),
     },
     async (baseUrl) => {
       const response = await analyze(baseUrl, formWith(pngFile()));
-      assert.equal(response.status, 503);
-      assert.equal((await response.json()).error.code, 'UNAVAILABLE');
+      assert.equal(response.status, 502);
+      assert.equal((await response.json()).error.code, 'INVALID_RESPONSE');
     },
   );
 
@@ -433,7 +426,7 @@ test('malformed or incomplete provider content returns INVALID_RESPONSE', async 
     {
       env: configuredEnv(),
       fetchImpl: async () =>
-        jsonResponse({ candidates: [{ content: { parts: [{ text: JSON.stringify(VALID_CONTENT) }] }, finishReason: 'MAX_TOKENS' }] }),
+        jsonResponse({ choices: [{ message: { content: JSON.stringify(VALID_CONTENT) }, finish_reason: 'length' }] }),
     },
     async (baseUrl) => {
       const response = await analyze(baseUrl, formWith(pngFile()));
@@ -477,11 +470,11 @@ test('client disconnect cancels in-flight provider work', async () => {
   });
 });
 
-test('model ID comes from runtime configuration, including a models/ prefix', async () => {
+test('model ID comes from runtime configuration', async () => {
   const calls = [];
   await withServer(
     {
-      env: configuredEnv({ GEMINI_MODEL: 'models/example-vision-model' }),
+      env: configuredEnv({ OPENROUTER_MODEL: 'example-vision-model' }),
       fetchImpl: async (url, init) => {
         calls.push({ url, init });
         return jsonResponse(providerPayload(VALID_CONTENT));
@@ -490,10 +483,10 @@ test('model ID comes from runtime configuration, including a models/ prefix', as
     async (baseUrl) => {
       const response = await analyze(baseUrl, formWith(pngFile()));
       assert.equal(response.status, 200);
-      assert.equal((await response.json()).model, 'example-vision-model');
+      assert.equal((await response.json()).model, 'openrouter:example-vision-model');
     },
   );
-  assert.ok(calls[0].url.endsWith('/models/example-vision-model:generateContent'));
+  assert.equal(JSON.parse(calls[0].init.body).model, 'example-vision-model');
 });
 
 test('other routes keep explicit unavailable/stub behavior and safe headers', async () => {

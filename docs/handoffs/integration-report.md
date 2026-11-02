@@ -1,3 +1,5 @@
+> **Current provider setup:** NIM primary with OpenRouter backup; Gemini runtime and saved credential removed. Failover covers unavailable/configuration/auth/rate/network/timeout/pending responses under one 25-second budget. Invalid/refused output stops. Reports identify the answering provider/model and backup use. Verification: 46 Node/HTTP, 4 render, and 10 browser checks pass, plus production build. Real provider checks await NIM and OpenRouter keys. Both routes use Nemotron, so a shared underlying-model outage may affect both.
+
 > **Latest verification supersedes earlier restrictions:** full Node/HTTP suite 40/40, render checks 4/4, and Playwright browser checks 10/10 PASS. Three actual PDFs verified. Recommended provider is now OpenRouter; real inference awaits its key. See [current QA report](../../dogfood-output/report.md). Integration is being saved as a local commit; nothing is pushed/deployed. Earlier read-only/DNS/browser restrictions below are historical.
 
 > Latest QA follow-up: production build passes, 23 targeted + 4 render checks pass; full localhost suite and real Gemini/PDF remain blocked. See [user QA report](../../dogfood-output/report.md).
