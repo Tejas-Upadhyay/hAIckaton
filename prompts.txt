@@ -1,0 +1,90 @@
+SWFL STORMGUARD AI — AGENT STARTING PROMPTS
+
+Start with Codex in the original hAIckaton folder. Once it finishes the
+scaffold and creates the worker folders, launch OpenCode and agy in
+parallel in their respective worktrees.
+
+1. CODEX — ORIGINAL hAIckaton FOLDER
+
+Read plan.md. You are the lead coordinator and integrator for SWFL
+StormGuard AI. I am the sole human participant.
+
+Start implementing:
+1. Create AGENTS.md documenting roles, file ownership, build commands,
+   and handoff rules.
+2. Scaffold React + Vite + Tailwind. Verify dependency versions.
+3. Define shared service interfaces and response schemas in
+   docs/contracts.md. Create working service stubs so the frontend
+   can develop independently.
+4. Prioritize photo upload → damage assessment → printable report.
+   Keep evacuation resources and copilot secondary.
+5. Keep application API secrets server-side. Define the minimal server
+   endpoint contract and assign server implementation to OpenCode.
+6. Commit the scaffold, then create separate worktrees inside
+   .worktrees/backend and .worktrees/frontend on work/backend and
+   work/frontend. Ignore .worktrees, secrets, and local Notion exports.
+7. Create task handoffs for each worker, including exact owned files,
+   interfaces, verification commands, and acceptance criteria.
+
+Codex owns scaffold/configuration, shared contracts, and app integration.
+OpenCode owns services, data, server code, and their targeted tests.
+Antigravity owns components and presentation styles.
+
+Clearly label sample results. Emergency statuses require verified
+sources and timestamps; otherwise show them as unavailable or demo data.
+Do not infer an official evacuation zone from a city name.
+
+Report the absolute worker folder paths and launch prompts when ready.
+Do not launch other agents yourself yet.
+
+
+2. OPENCODE — .worktrees/backend
+
+Read AGENTS.md, plan.md, docs/contracts.md, and your backend handoff.
+You are the services/data worker using DeepSeek V4.1 Flash, free,
+max effort.
+
+Implement your assigned backend task against the agreed contracts.
+Work only in your assigned files and checkout. Do not change shared
+contracts, dependencies, or frontend files without a handoff to Codex.
+
+Implement validated image analysis, the server-side Gemini integration,
+and clearly labeled sample cases. Keep the runtime model configurable;
+verify its API identifier instead of assuming the development model
+name is an API endpoint.
+
+An API failure must not produce a fabricated assessment of the uploaded
+photo. Offer an explicitly labeled sample instead.
+
+Run the assigned checks, commit your work, and report the branch,
+commit hash, changed files, checks, and remaining issues.
+
+
+3. ANTIGRAVITY (agy) — .worktrees/frontend
+
+Read AGENTS.md, plan.md, docs/contracts.md, and your frontend handoff.
+You are the frontend worker using Gemini 3.8.
+
+Build the assigned React components and styles. Prioritize a polished,
+working flow: choose/upload image → analyze → inspect findings →
+print report. Include responsive layout, accessible controls, and
+loading/error/empty states.
+
+Use the agreed service interfaces and existing stubs. Keep sample and
+live results visibly distinct. Show emergency information only with
+the status/provenance supplied by the data contract.
+
+Work only in your assigned files and checkout. Route dependency,
+contract, and integration changes through Codex.
+
+Run the assigned checks, commit your work, and report the branch,
+commit hash, changed files, checks, and remaining issues.
+
+
+4. CODEX — FINAL INTEGRATION
+
+When both workers finish, give Codex their reports with this prompt:
+
+Review and integrate these worker commits. Resolve integration issues,
+run the build and targeted checks, and verify the complete demo flow.
+Report what works, what remains, and any setup needed for live AI.

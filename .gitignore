@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.worktrees/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+coverage/
+24a2c747-*

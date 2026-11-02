@@ -1,0 +1,25 @@
+@import "tailwindcss";
+@source "../components";
+@source "../App.jsx";
+
+:root { font-family: system-ui, sans-serif; color: #173d35; background: #f4f7f3; line-height: 1.6; }
+h2 { font-size: 1.5rem; font-weight: 700; margin: 0 0 1rem; }
+h3 { font-weight: 700; margin-top: 1rem; }
+p { margin: .6rem 0; }
+.panel { background: white; border: 1px solid #c9d9d1; padding: 1.5rem; border-radius: 1rem; margin-bottom: 1.5rem; }
+.eyebrow { font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; }
+label { display: block; font-weight: 600; }
+input { display: block; margin: .75rem 0; max-width: 100%; }
+button { background: #173d35; color: white; padding: .65rem 1rem; border-radius: .5rem; cursor: pointer; }
+button:disabled { opacity: .5; cursor: not-allowed; }
+:focus-visible { outline: 3px solid #c66c24; outline-offset: 3px; }
+.preview { max-height: 20rem; margin: 1rem 0; object-fit: contain; }
+ul { list-style: disc; padding-left: 1.5rem; }
+[role=alert] { color: #9a3423; }
+@media print {
+  :root { color: black; background: white; }
+  .no-print, header { display: none !important; }
+  .panel { border: 0; padding: 0; }
+  main { max-width: none; padding: 0; }
+  .report section { break-inside: avoid; }
+}
