@@ -1,0 +1,12 @@
+{
+  "status": 200,
+  "calls": [
+    "nim:simulated503",
+    "openrouter:live"
+  ],
+  "mode": "live",
+  "model": "openrouter:nvidia/nemotron-3.5-super-vl:free",
+  "severity": "unknown",
+  "backupNote": "Backup live provider used because the primary provider was unavailable or not configured.",
+  "elapsedMs": 5769
+}

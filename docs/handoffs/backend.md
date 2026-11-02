@@ -1,5 +1,7 @@
 # OpenCode handoff — backend
 
+> **Historical assignment:** The initial Gemini task was completed and later superseded. Current backend code lives in the integration checkout on `main` and uses NIM primary with OpenRouter backup. See `docs/handoffs/backend-report.md` and `server/README.md`.
+
 Worktree: `/Users/hz256598/Documents/code/hAIckaton/.worktrees/backend`
 Branch: `work/backend`
 Owner-reported model: DeepSeek V4.1 Flash (free), max effort. Select/verify it in OpenCode; this document does not change tool settings.
@@ -13,7 +15,7 @@ Read `AGENTS.md`, `plan.md`, and `docs/contracts.md`. Implement v1 without chang
 ## Tasks in priority order
 
 1. Preserve all public service exports and working sample mode. Add representative, credited local sample assets if feasible; label synthetic illustrations. Keep IDs stable.
-2. Implement POST `/api/analyze` on the supplied native Node server, using server-only Gemini credentials and a verified vision model ID supplied through `GEMINI_MODEL`. Never hard-code the development tool's model name as the API model ID.
+2. Implement POST `/api/analyze` on the supplied native Node server, using server-only NIM/OpenRouter credentials and runtime model IDs. Never hard-code the development tool's model name as an API model ID. The current implementation uses NIM primary, OpenRouter backup, and explicit failover.
 3. Independently validate uploaded content, MIME, and caps. Validate structured model output and attach server-owned provenance. Add safe error mapping, timeouts, and no image persistence/logging.
 4. Keep explicit sample selection distinct from live analysis, including on key/network/provider failure. No live response may be a fixture.
 5. Preserve unavailable emergency status unless real source verification and a Codex-approved entry schema exist. Copilot is secondary and may remain 503.

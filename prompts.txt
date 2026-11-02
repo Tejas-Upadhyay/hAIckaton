@@ -1,5 +1,9 @@
 SWFL STORMGUARD AI — AGENT STARTING PROMPTS
 
+> Historical prompts from the initial build. Current rules are in AGENTS.md.
+> The runtime provider changed from Gemini to NIM primary with OpenRouter
+> backup; do not reuse the Gemini runtime instructions below.
+
 Start with Codex in the original hAIckaton folder. Once it finishes the
 scaffold and creates the worker folders, launch OpenCode and agy in
 parallel in their respective worktrees.
@@ -48,13 +52,14 @@ Implement your assigned backend task against the agreed contracts.
 Work only in your assigned files and checkout. Do not change shared
 contracts, dependencies, or frontend files without a handoff to Codex.
 
-Implement validated image analysis, the server-side Gemini integration,
-and clearly labeled sample cases. Keep the runtime model configurable;
-verify its API identifier instead of assuming the development model
-name is an API endpoint.
+Implement validated image analysis, server-side NIM/OpenRouter integration,
+and clearly labeled sample cases. Keep provider ordering and runtime model
+IDs configurable; verify each API identifier instead of assuming a
+development model name is an API endpoint.
 
 An API failure must not produce a fabricated assessment of the uploaded
-photo. Offer an explicitly labeled sample instead.
+photo. Offer a labeled sample only for explicit user selection; never
+substitute one automatically.
 
 Run the assigned checks, commit your work, and report the branch,
 commit hash, changed files, checks, and remaining issues.

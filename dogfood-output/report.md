@@ -21,7 +21,7 @@ The older key/setup blockers below are historical and superseded by this live ve
 
 ---
 
-> **Current provider setup:** NIM primary with OpenRouter backup; Gemini runtime and saved credential removed. Failover covers unavailable/configuration/auth/rate/network/timeout/pending responses under one 25-second budget. Invalid/refused output stops. Reports identify the answering provider/model and backup use. Verification: 46 Node/HTTP, 4 render, and 10 browser checks pass, plus production build. Real provider checks await NIM and OpenRouter keys. Both routes use Nemotron, so a shared underlying-model outage may affect both.
+> **Current provider setup:** NIM primary with OpenRouter backup; Gemini runtime and saved credential removed. Failover covers unavailable/configuration/auth/rate/network/timeout/pending responses under one 25-second budget. Invalid/refused output stops. Reports identify the answering provider/model and backup use. Verification: 46 Node/HTTP, 4 render, and 10 browser checks pass, plus production build and real live calls to both providers. Both routes use Nemotron, so a shared underlying-model outage may affect both.
 
 # StormGuard QA — current verification
 
@@ -30,14 +30,14 @@ The older key/setup blockers below are historical and superseded by this live ve
 ## Result
 
 - Production build: PASS.
-- Full Node/HTTP suite: 40/40 PASS, including provider adapters, stream caps, disconnect cancellation, malformed output, credential isolation, and timeout handling.
+- Full Node/HTTP suite: 46/46 PASS, including provider adapters, failover, stream caps, disconnect cancellation, malformed output, credential isolation, and timeout handling.
 - Actual React report rendering: 4/4 PASS.
 - Playwright user journeys: 10/10 PASS.
 - Three actual browser-generated sample PDFs: each one page; text extraction confirms SAMPLE, limitations and generation time, with controls hidden. Roof report inspected visually after rasterization.
 - Automated accessibility: zero serious/critical WCAG A/AA violations in the checked sample-report state. This is not full accessibility certification or a screen-reader audit.
 - Credential scan: no configured key or server key variable found in built browser JavaScript. .env.local remains ignored with owner-only permissions.
 
-**All 54 automated checks pass. Live inference remains the only provider setup blocker.** The supplied Gemini credential received HTTP 401 UNAUTHENTICATED from Google; an actual upload through the local backend returned safe 503 NOT_CONFIGURED with no fabricated assessment. The app now selects OpenRouter, with an empty OPENROUTER_API_KEY awaiting the owner. No OpenRouter request has been made with a real key.
+**All 60 automated checks pass. Live inference was separately verified with real NIM and OpenRouter calls.** The supplied Gemini credential was rejected and is no longer used; Gemini runtime support was removed. A real browser upload produced a NIM report, and a simulated NIM failure produced a real OpenRouter report with backup provenance. No sample was substituted.
 
 ## Browser coverage and evidence
 
@@ -71,29 +71,33 @@ The screenshot and regression-test evidence is generated from the fixed implemen
 
 ## Provider decision
 
-Recommended path: OpenRouter using pinned model `nvidia/nemotron-3.5-super-vl:free`. Public model metadata checked November 2, 2026 lists image input, response_format, structured_outputs, and zero prompt/completion price. The adapter requires schema-capable endpoints and preserves server-owned provenance. Model/provider availability and free-tier limits can change; metadata is not proof of successful live inference.
+Current path: NVIDIA NIM primary (`nvidia/nemotron-3.5-super-vl-120b-a12b`) with OpenRouter backup (`nvidia/nemotron-3.5-super-vl:free`). Both routes accept image input and JSON-schema output; the adapter requires schema-capable endpoints and preserves server-owned provenance. Both providers were verified live on November 2, 2026, including a simulated primary failure. Both routes use Nemotron, so a shared underlying-model outage can affect both.
 
-Gemini remains available with AI_PROVIDER=gemini. There is no automatic provider switch or hidden sample fallback.
+Gemini runtime support and the saved Gemini credential were removed. There is no automatic sample fallback; only configured providers are attempted.
 
-Setup now in ignored .env.local:
+Setup in ignored `.env.local`:
 
 ```dotenv
-AI_PROVIDER=openrouter
-OPENROUTER_API_KEY=your-key-here
+AI_PROVIDER=nim
+AI_FALLBACK_PROVIDER=openrouter
+NIM_API_KEY=your-nvidia-key
+NIM_MODEL=nvidia/nemotron-3.5-super-vl-120b-a12b
+OPENROUTER_API_KEY=your-openrouter-key
 OPENROUTER_MODEL=nvidia/nemotron-3.5-super-vl:free
 ```
 
-The owner needs to create/save an OpenRouter key. Restart the API afterward, then upload a real supported image in the UI and confirm a live report, latency and observation quality. The original Gemini credential is preserved privately and is not used while OpenRouter is selected.
+Restart the API after changing credentials. Upload a real supported image to confirm live behavior; health reports configuration presence, not quota validity.
 
 ## Remaining limits
 
-- Real OpenRouter authentication, access/quota, observation quality and latency are not verified until a working key is supplied.
+- Real damaged-property photo accuracy was not evaluated; test inputs were a neutral generated image and a visibly labeled synthetic roof illustration.
+- Both live providers use Nemotron, so a shared underlying-model outage can affect both.
 - Browser regressions run on Chrome only. No Safari/Firefox or full assistive-technology certification is claimed.
 - Copilot and live emergency feeds remain explicitly unavailable by MVP scope.
 - Production hosting and an installed offline service worker remain out of scope; samples work while the app is served.
-- Source integration will be saved locally; nothing is pushed or deployed. Pre-existing pitch deck and Vite host configuration are preserved.
+- Integration is committed locally; nothing is pushed or deployed. Public repository publication and production hosting remain owner tasks.
 
-Sources: [OpenRouter catalog](https://openrouter.ai/api/v1/models), [structured outputs](https://openrouter.ai/docs/guides/features/structured-outputs), [image input guide](https://github.com/OpenRouterTeam/docs/blob/main/guides/overview/multimodal/image-understanding.mdx), [Google subscription/API distinction](https://ai.google.dev/gemini-api/docs/google-ai-plans).
+Sources: [NVIDIA NIM model reference](https://docs.api.nvidia.com/nim/reference/nvidia-nemotron-3_5-super-vl-120b-a12b-infer), [OpenRouter structured outputs](https://openrouter.ai/docs/guides/features/structured-outputs), [OpenRouter image input guide](https://github.com/OpenRouterTeam/docs/blob/main/guides/overview/multimodal/image-understanding.mdx).
 
 ---
 

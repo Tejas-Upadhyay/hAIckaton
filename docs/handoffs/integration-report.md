@@ -21,11 +21,11 @@ The older key/setup blockers below are historical and superseded by this live ve
 
 ---
 
-> **Current provider setup:** NIM primary with OpenRouter backup; Gemini runtime and saved credential removed. Failover covers unavailable/configuration/auth/rate/network/timeout/pending responses under one 25-second budget. Invalid/refused output stops. Reports identify the answering provider/model and backup use. Verification: 46 Node/HTTP, 4 render, and 10 browser checks pass, plus production build. Real provider checks await NIM and OpenRouter keys. Both routes use Nemotron, so a shared underlying-model outage may affect both.
+> **Current provider setup:** NIM primary with OpenRouter backup; Gemini runtime and saved credential removed. Failover covers unavailable/configuration/auth/rate/network/timeout/pending responses under one 25-second budget. Invalid/refused output stops. Reports identify the answering provider/model and backup use. Verification: 46 Node/HTTP, 4 render, and 10 browser checks pass, plus production build and real live calls to both providers. Both routes use Nemotron, so a shared underlying-model outage may affect both.
 
-> **Latest verification supersedes earlier restrictions:** full Node/HTTP suite 40/40, render checks 4/4, and Playwright browser checks 10/10 PASS. Three actual PDFs verified. Recommended provider is now OpenRouter; real inference awaits its key. See [current QA report](../../dogfood-output/report.md). Integration is being saved as a local commit; nothing is pushed/deployed. Earlier read-only/DNS/browser restrictions below are historical.
+> **Latest verification supersedes earlier restrictions:** full Node/HTTP suite 46/46, render checks 4/4, and Playwright browser checks 10/10 PASS. Three actual sample PDFs and two live-report PDFs were verified. NIM and OpenRouter both returned real live results, including a simulated-primary-failure failover. See [current QA report](../../dogfood-output/report.md). Integration is committed locally; nothing is pushed or deployed. Earlier read-only/DNS/browser restrictions below are historical.
 
-> Latest QA follow-up: production build passes, 23 targeted + 4 render checks pass; full localhost suite and real Gemini/PDF remain blocked. See [user QA report](../../dogfood-output/report.md).
+> Superseded QA follow-up: the full localhost suite, live provider calls, and saved-PDF checks were completed later the same day. See the live-verification section above and [current QA report](../../dogfood-output/report.md).
 
 # Integration verification — November 2, 2026
 
@@ -58,7 +58,9 @@ Main checkout: `/Users/hz256598/Documents/code/hAIckaton`. Backend source: `work
 - `git diff --check`: clean.
 - Built client JavaScript: no server key variable, API-key prefix, or known test key detected. This is a targeted scan, not a general security certification.
 
-## Browser demo verification
+## Browser demo verification (historical, restricted environment)
+
+> This pass predates the live provider work and the permission change. Current browser/PDF results are in the live-verification section at the top and in `dogfood-output/report.md`.
 
 Used Chrome DevTools on the already-running UI at http://127.0.0.1:5173. The agent shell could not start a separate Vite/API listener because local port binding is restricted. Browser source and screenshots reflected the integration changes.
 
@@ -69,7 +71,7 @@ Verified with real DOM events in the browser:
 - Valid file input and drag/drop show a photo preview.
 - File input resets for reselection. Sample selection clears uploaded evidence.
 - Analyze with the unavailable API displays a notice and no fabricated assessment. The current Vite API health proxy returned 502; no API server was reachable there.
-- Injected a clearly mocked API response only inside the test browser: live provenance/model rendered, and Remove photo cleared report/preview. This does not verify Gemini.
+- Injected a clearly mocked API response only inside the test browser: live provenance/model rendered, and Remove photo cleared report/preview. This did not verify a real provider call.
 - Static checklist toggles and copilot form shows unavailable.
 - Print button invokes window.print (intercepted during this check). Actual print dialog, pagination, and saved PDF remain unverified.
 - At 375, 768 and 1440 pixels: no horizontal overflow; sample images loaded. Reviewed mobile and full-page desktop screenshots. No pre-existing visual baseline: visual regression comparison is INCONCLUSIVE.
@@ -78,23 +80,25 @@ Verified with real DOM events in the browser:
 
 ## Live AI setup and remaining work
 
-QA follow-up: the owner supplied a runtime key, now saved in ignored .env.local with mode 0600 and model configuration. The shell could not reach Google (DNS ENOTFOUND) or bind the API port (EPERM), so key validity/quota and real inference remain unverified. See ../../dogfood-output/report.md for current QA results.
-
-Create ignored .env.local:
+The historical Gemini setup below was superseded by the NIM/OpenRouter migration in `a212764`. The current server-only configuration is:
 
 ```dotenv
-GEMINI_API_KEY=your-real-server-only-key
-GEMINI_MODEL=gemini-3.8-flash
+AI_PROVIDER=nim
+AI_FALLBACK_PROVIDER=openrouter
+NIM_API_KEY=your-nvidia-key
+NIM_MODEL=nvidia/nemotron-3.5-super-vl-120b-a12b
+OPENROUTER_API_KEY=your-openrouter-key
+OPENROUTER_MODEL=nvidia/nemotron-3.5-super-vl:free
 PORT=8787
 ```
 
-Run npm ci if needed, npm run dev for UI, and npm run dev:server in a second terminal. Restart the API after config changes. Health reports configuration presence only. Confirm your API project has model access/quota, then analyze a real supported photo and inspect the response, latency and quality. Development-tool subscriptions do not configure runtime credentials.
+Both providers were verified live on November 2, 2026, including a browser upload and a simulated-primary-failure failover. The full localhost HTTP suite, saved-PDF inspection, and Git integration commit are complete. Copilot and live emergency feeds remain intentionally unavailable. Production same-origin API hosting and public repository publication are separate owner tasks; preview has no API proxy.
 
-Still required: real Gemini smoke test, full localhost HTTP suite in an unrestricted terminal, actual saved-PDF inspection, and a Git integration commit. Copilot and live emergency feeds are intentionally unavailable. Production same-origin API hosting is a separate deployment task; preview has no API proxy.
+Remaining scope limit: real damaged-property photo accuracy was not evaluated. Test inputs were a neutral generated image and a visibly labeled synthetic roof illustration.
 
 Sources checked November 2, 2026:
-- Model vision/structured-output support: https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash
-- REST request fields, including store: https://ai.google.dev/api/generate-content
+- NIM endpoint/model/schema: https://docs.api.nvidia.com/nim/reference/nvidia-nemotron-3_5-super-vl-120b-a12b-infer
+- OpenRouter structured output: https://openrouter.ai/docs/guides/features/structured-outputs
 - County directory: https://www.floridadisaster.org/planprepare/counties/
 - Lee portal: https://www.leefl.gov/584/Emergency-Management
 - Charlotte portal: https://www.charlottecountyfl.gov/departments/emergency-management/
@@ -112,6 +116,6 @@ Backed up the pre-recovery project files, excluding secrets, to `/tmp/stormguard
 
 Worker files were recovered from committed sources. Uncommitted integration files had no exact Git snapshot; reconstructed the earlier photo-clear/request invalidation fix, file-input reset, shared validation constants, sample image display, Tailwind base layer, contract/documentation updates, socket-free API checks, and React report-render checks from session evidence. This is a functional reconstruction, not a byte-for-byte restoration of every deleted uncommitted file.
 
-Validation: production build passes, 15 socket-free backend/frontend/integration checks pass, and 4 actual React render checks pass. The full backend HTTP suite remains unverified here because localhost port binding is restricted (`EPERM`). Browser events, visual layout, real print/PDF behavior, and an actual Gemini request remain unverified. No secrets were read or provider calls made during recovery.
+Validation at recovery time: production build passed, 15 socket-free backend/frontend/integration checks passed, and 4 actual React render checks passed. The full backend HTTP suite was blocked by localhost port binding (`EPERM`). These restrictions were resolved later; the full suite, live provider calls, and saved-PDF checks now pass as recorded above. No secrets were read or provider calls made during recovery itself.
 
-No recovery commit or branch merge has been recorded. Review and commit the restored changes from a Git-writable terminal; the worker commits are still available. The original integration request can continue from these recovered files.
+The recovery state was later committed as `8202317` and the provider migration as `a212764`; live verification is recorded in `4a825fc`. Worker commits remain available in their worktrees. The backend worktree still contains the superseded Gemini implementation and must be synced from `main` before further work.

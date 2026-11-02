@@ -1,6 +1,6 @@
 # SWFL StormGuard AI
 
-Solo hackathon entry supported by Codex, OpenCode, and Antigravity. Recovered worker implementation: labeled sample assessments, a printable documentation draft, and server-side photo analysis through NVIDIA NIM with OpenRouter backup. Copilot and live emergency information remain unavailable. A real-key Gemini smoke test is still required.
+Solo hackathon entry supported by Codex, OpenCode, and Antigravity. Integrated implementation: labeled sample assessments, a printable documentation draft, and server-side photo analysis through NVIDIA NIM with OpenRouter backup. NIM and OpenRouter were each verified live on November 2, 2026; a real damaged-property photo has not been evaluated. Copilot and live emergency information remain unavailable. Nothing is deployed.
 
 ## Local development
 
@@ -23,7 +23,7 @@ OPENROUTER_MODEL=nvidia/nemotron-3.5-super-vl:free
 PORT=8787
 ```
 
-Restart the API after changing credentials. Both keys remain server-side. The backup is used on service/configuration failures within a shared timeout, never as a substitute sample. Reports show which provider/model answered. Invalid/refused model output stops rather than bypassing refusal. See [provider details](server/README.md). Live provider verification still requires both keys. Samples need neither.
+Restart the API after changing credentials. Both keys remain server-side. The backup is used on service/configuration failures within a shared timeout, never as a substitute sample. Reports show which provider/model answered. Invalid/refused model output stops rather than bypassing refusal. See [provider details](server/README.md). Live provider verification passed with both keys on November 2, 2026. Samples need neither key.
 
 ```sh
 npm test
@@ -59,7 +59,7 @@ Uploads are checked for MIME, size, signatures, and basic container completeness
 
 Start each worker in its assigned worktree after the scaffold commit. Worktrees need their own dependency install and do not inherit uncommitted files or conversations. Do not run both UIs on port 5173 simultaneously; close the integration UI before starting the frontend worker UI, or run `npm run dev -- --port 5174`.
 
-Both worker worktrees and their commits exist. Recovery restored their code into the main working directory without resetting history or changing the worktrees. Reconstructed integration fixes are uncommitted; see `docs/handoffs/integration-report.md`. Do not rerun the initial setup script to merge these changes.
+The integration is saved in local commit `4a825fc`. The worker worktrees and their historical commits remain available, but they do not contain the NIM/OpenRouter migration. Do not continue backend work in `.worktrees/backend` without syncing it from `main`. Public repository publication and production hosting are separate owner tasks; nothing has been pushed or deployed.
 
 ## Scope
 

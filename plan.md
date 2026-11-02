@@ -1,5 +1,7 @@
 # Implementation Plan: SWFL StormGuard AI
 
+> **Current status (November 2, 2026):** This document preserves the original design proposal. The implemented app and binding rules are in `AGENTS.md`, `docs/contracts.md`, and `README.md`. Where this plan conflicts with them, the implementation wins. In particular, the app does not use browser API keys, does not silently substitute samples, does not claim FEMA classifications or repair quotes, and does not infer evacuation zones from city names.
+
 A hyper-local hurricane preparedness, evacuation intelligence, and multimodal AI damage assessment web application engineered for Southwest Florida (Lee, Collier, and Charlotte counties).
 
 ---
@@ -43,9 +45,9 @@ Model names and settings above were supplied by the project owner. They document
 
 ### Application AI Model
 
-**Current integration choice:** OpenRouter, with pinned model `nvidia/nemotron-3.5-super-vl:free` (image input and structured-output support checked in provider metadata November 2, 2026). Set server-only `AI_PROVIDER`, `OPENROUTER_API_KEY`, and `OPENROUTER_MODEL`. Gemini remains an optional alternative. The previously supplied Gemini credential returned 401 UNAUTHENTICATED. A new OpenRouter credential and successful real inference are still required; mocked tests do not establish live availability.
+**Current integration choice:** NVIDIA NIM primary with `nvidia/nemotron-3.5-super-vl-120b-a12b`, and OpenRouter backup with `nvidia/nemotron-3.5-super-vl:free`. Both routes accept image input and JSON-schema output. Set server-only `AI_PROVIDER=nim`, `AI_FALLBACK_PROVIDER=openrouter`, and the matching provider keys/models. Both providers were verified live on November 2, 2026, including a browser upload and a simulated-primary-failure failover. Because both routes use Nemotron, a shared underlying model outage can affect both.
 
-The **Gemini vision/chat model used by StormGuard at runtime is separate from the models powering these development tools**. Using Gemini in the app does not configure OpenCode, Codex, or Antigravity. Confirm the available Gemini model ID and credentials before implementing the service, and record the selected runtime model here. The Gemini 2.0/1.5 Flash references below are provisional choices to verify, not confirmed available endpoints. Development-tool subscriptions or logins do not establish that the application's Gemini API credentials are configured.
+The **runtime vision model is separate from the models powering the development tools**. Provider credentials and model IDs stay server-side; they are never exposed through a `VITE_` variable, browser storage, logs, or responses. Gemini runtime support and the earlier Gemini credential were removed. Development-tool subscriptions or logins do not configure application credentials.
 
 If live analysis is unavailable, show an explicit **demo/sample result** label. Pre-computed results must not be presented as a fresh AI assessment of an arbitrary uploaded image.
 
@@ -53,11 +55,11 @@ If live analysis is unavailable, show an explicit **demo/sample result** label. 
 
 ## 2. User Review Required
 
-**Implementation decisions (supersede conflicting proposals below):** Follow `AGENTS.md` and `docs/contracts.md`. Gemini secrets stay server-side in `GEMINI_API_KEY` / `GEMINI_MODEL`; no browser API-key drawer or `VITE_GEMINI_API_KEY`. Runtime model selection remains unconfirmed. Live failures show explicit errors, and samples require explicit selection and labeling. Emergency data remains unavailable without verified sources and timestamps; no city-based evacuation zones or fabricated live shelter capacity. The MVP exports a provisional property documentation draft, with no official FEMA classification or repair quote. Frontend uses React 19, Vite 8, and Tailwind 4 as documented in `docs/dependencies.md`.
+**Implementation decisions (supersede conflicting proposals below):** Follow `AGENTS.md` and `docs/contracts.md`. NIM/OpenRouter credentials and model IDs stay server-side in `NIM_API_KEY`/`NIM_MODEL` and `OPENROUTER_API_KEY`/`OPENROUTER_MODEL`; no browser API-key drawer or `VITE_` credentials. Live failures show explicit errors, and samples require explicit user selection and labeling. Emergency data remains unavailable without verified sources and timestamps; no city-based evacuation zones or fabricated live shelter capacity. The MVP exports a provisional property documentation draft, with no official FEMA classification or repair quote. Frontend uses React 19, Vite 8, and Tailwind 4 as documented in `docs/dependencies.md`.
 
 > [!IMPORTANT]
 > **Demo Reliability & API Fallback**:
-> The app defaults to a seamless dual-mode: if an API key (`VITE_GEMINI_API_KEY` or user-entered key in the settings modal) is present, it executes live Gemini 2.0/1.5 Flash multimodal vision analysis. If no key is set or the network fails, it immediately activates the high-fidelity pre-computed SWFL damage dataset without throwing errors.
+> Live analysis runs only when a server-side provider is configured. The primary is NIM and the backup is OpenRouter. Failover is limited to provider/service failures and never substitutes a sample. If both providers fail, the UI shows an explicit unavailable error and no assessment. Samples are always chosen deliberately by the user and are visibly labeled.
 
 > [!NOTE]
 > **Hackathon Submission Deadline**:
@@ -67,7 +69,7 @@ If live analysis is unavailable, show an explicit **demo/sample result** label. 
 
 ## 3. Open Questions
 
-1. **API Key Setup**: Do you have a Gemini API key ready, or would you like to use the app's interactive API key settings drawer (or rely on the pre-bundled test cases during judging)?
+1. **API Key Setup**: Resolved. NIM and OpenRouter keys are server-side in ignored `.env.local`; both were verified live on November 2, 2026. There is no interactive browser key drawer.
 2. **Additional Features**: Would you like an interactive FEMA claim PDF/print export or is a downloadable JSON/formatted report sufficient? (We will implement a print-styled formal claim summary view).
 
 ---
@@ -90,17 +92,18 @@ flowchart TD
     end
 
     subgraph Service["AI & Knowledge Layer"]
-        AIService["AI Service (Gemini 2.0/1.5 Flash Vision API)"]
+        AIService["Server AI Service (NIM primary, OpenRouter backup)"]
         LocalDB["SWFL Emergency Database (Lee, Collier, Charlotte)"]
-        Fallback["Resilient Offline Fallback Engine"]
+        Error["Explicit unavailable error; no assessment"]
     end
 
     Auditor --> Store
     ZoneNav --> Store
     Copilot --> Store
     Store --> AIService
-    AIService -->|Online| CloudAI["Google Gemini API"]
-    AIService -->|Offline / No Key| Fallback
+    AIService -->|Primary| NIM["NVIDIA NIM"]
+    AIService -->|Service failure| OpenRouter["OpenRouter"]
+    AIService -->|Both fail| Error
     ZoneNav --> LocalDB
     Store --> Modal
 ```
@@ -108,6 +111,8 @@ flowchart TD
 ---
 
 ## 5. Proposed Changes
+
+> **Historical proposal:** The implemented app follows `AGENTS.md` and `docs/contracts.md`. Items below that mention repair estimates, FEMA classifications, webcam capture, live shelter capacity, or automatic sample fallback were not implemented and must not be presented as current behavior.
 
 ### Component 1: Core Scaffolding & Configuration
 
@@ -174,10 +179,10 @@ Provides instant-load sample assets and benchmark AI evaluations for bulletproof
 
 #### [NEW] `src/services/aiService.js`
 * **Multimodal Vision Handler**:
-  - Ingests user-uploaded images or webcam snapshots.
-  - Converts images to base64.
-  - Sends a prompt to Gemini 2.0 / 1.5 Flash enforcing strict JSON schema output.
-  - Includes transparent fallback logic: If no API key is detected or the API returns an error, cleanly loads the closest pre-seeded scenario so the user interface never breaks.
+  - Ingests one validated JPEG/PNG/WebP upload, up to 5 MiB.
+  - Sends the image to the server-owned provider chain: NIM primary, OpenRouter backup.
+  - Enforces strict JSON-schema output and validates the result before adding trusted provenance.
+  - On provider or network failure, shows an explicit unavailable error and no assessment. Samples are never substituted automatically.
 
 * **Emergency Copilot Handler**:
   - Handles real-time hurricane preparedness and post-storm guidance queries referencing SWFL county regulations.
@@ -221,12 +226,12 @@ Provides instant-load sample assets and benchmark AI evaluations for bulletproof
 
 ### Manual Verification ("The 5-Minute Pitch Rehearsal")
 1. **Introduction (1 min)**: Problem statement (SWFL hurricanes, insurance claim delays, evacuation confusion).
-2. **Hero Feature Demo - Multimodal Damage Auditor (2 min)**: Click Cape Coral roof sample -> run AI scan -> show FEMA category, repair estimate, and printable insurance claim export.
-3. **Evacuation & Shelter Intelligence (1 min)**: Select Sanibel / Cape Coral -> show Zone A evacuation order and nearest open shelters (Alico Arena at FGCU).
-4. **Storm Copilot (30 sec)**: Real-time dynamic emergency checklist.
-5. **Impact & Q&A (30 sec)**: Review tech stack, Gemini latency, and reliability.
+2. **Hero Feature Demo - Multimodal Damage Auditor (2 min)**: Select a labeled sample or upload a photo -> show provisional observations, hazards, limitations, provenance, and the printable documentation draft. Do not claim a FEMA classification or repair quote.
+3. **County Resources & Checklist (1 min)**: Show sourced county emergency-management links and the static preparedness checklist. Do not fabricate live evacuation orders or shelter capacity.
+4. **Storm Copilot (30 sec)**: Show the explicitly unavailable copilot state and the static checklist.
+5. **Impact & Q&A (30 sec)**: Review the NIM/OpenRouter architecture, live-verified latency, and the honest scope limits.
 
 
 ## Current provider decision (supersedes earlier runtime proposals)
 
-NVIDIA NIM primary (`nvidia/nemotron-3.5-super-vl-120b-a12b`) with OpenRouter backup (`nvidia/nemotron-3.5-super-vl:free`). Separate server-only keys, explicit provider ordering and bounded live failover; no automatic sample substitution. Gemini application integration and saved key removed. Development-tool assignments above remain separate. See server/README.md and docs/contracts.md. Live verification awaits provider keys.
+NVIDIA NIM primary (`nvidia/nemotron-3.5-super-vl-120b-a12b`) with OpenRouter backup (`nvidia/nemotron-3.5-super-vl:free`). Separate server-only keys, explicit provider ordering and bounded live failover; no automatic sample substitution. Gemini application integration and saved key were removed. Development-tool assignments above remain separate. See `server/README.md` and `docs/contracts.md`. Both providers were verified live on November 2, 2026, including a browser upload and simulated-primary-failure failover. Real damaged-property photo accuracy remains unevaluated.

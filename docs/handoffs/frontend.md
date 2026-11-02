@@ -1,5 +1,7 @@
 # Antigravity handoff — frontend
 
+> **Historical assignment:** The frontend was completed and integrated into `main`. The current app uses NIM primary with OpenRouter backup; Gemini is not part of the runtime. See `docs/handoffs/frontend-report.md` and `AGENTS.md`.
+
 Worktree: `/Users/hz256598/Documents/code/hAIckaton/.worktrees/frontend`
 Branch: `work/frontend`
 Owner-reported model: Gemini 3.8. Select/verify it in Antigravity; this document does not change tool settings.

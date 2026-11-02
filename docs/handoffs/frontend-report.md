@@ -1,5 +1,7 @@
 # Frontend Handoff Report — Antigravity
 
+> **Integration update:** The frontend below was integrated into `main` and verified live with NIM primary and OpenRouter backup. Gemini references in this historical report are superseded; the app has no Gemini runtime.
+
 - **Branch**: `work/frontend`
 - **Worktree**: `/Users/hz256598/Documents/code/hAIckaton/.worktrees/frontend`
 - **Owner-Reported Model**: Gemini 3.8
@@ -72,10 +74,10 @@ npm run check
 ## 4. Contract & Dependency Requests for Codex
 
 * **Dependencies**: Zero new dependencies were requested or introduced. Pure React 19 + Tailwind CSS 4 + standard browser APIs.
-* **Contracts**: All existing interfaces in `docs/contracts.md` and `src/contracts/assessment.js` were preserved without modification. The UI will seamlessly render live assessments as soon as OpenCode connects the Gemini API on the backend.
+* **Contracts**: All existing interfaces in `docs/contracts.md` and `src/contracts/assessment.js` were preserved without modification. The UI renders live assessments from the current NIM/OpenRouter backend through the existing provider-agnostic contract.
 
 ---
 
 ## 5. Remaining Issues / Notes
 
-* Live image inference will activate automatically when OpenCode completes `POST /api/analyze` integration in the backend worktree. The frontend handles this seamlessly today.
+* Live image inference is integrated in `main` and was verified with both providers. The backend worktree still contains the superseded Gemini implementation; do not use it without syncing from `main`.
